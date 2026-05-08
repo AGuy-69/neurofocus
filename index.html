@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroFocus | Sustained Attention Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <!-- Background Canvas for Particles -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Global Navigation -->
+    <header>
+        <div class="logo">NEURO<span>FOCUS</span></div>
+        <nav>
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="height: 25px; width:auto; color:var(--text-primary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                </svg>
+            </button>
+            <button id="sound-toggle" class="icon-btn" aria-label="Toggle Sound">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="height: 25px; width:auto; color:var(--text-primary);">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- App Container (Handles Section Routing) -->
+    <main id="app">
+        
+        <!-- LANDING PAGE -->
+        <section id="home" class="view active">
+            <div class="hero">
+                <h1 class="animate-title">Measure Your Focus.</h1>
+                <p class="subtitle">Clinical-grade Sustained Attention to Response Task (SART) testing for the modern mind.</p>
+                <div class="btn-group">
+                    <button class="btn primary glow" onclick="navigate('test-intro')">Start Test</button>
+                    <button class="btn secondary" onclick="navigate('about')">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about" class="view">
+            <div class="container">
+                <h2>The Science of SART</h2>
+                <div class="cards-grid">
+                    <div class="glass-label">
+                        <h3>What is it?</h3>
+                        <p>The Sustained Attention to Response Task is a computer-based cognitive test designed to measure vigilance and impulse control.</p>
+                    </div>
+                    <div class="glass-label">
+                        <h3>How it works</h3>
+                        <p>You will see a rapid sequence of numbers (1-9). Press the spacebar for every number <strong>EXCEPT</strong> the target number (3).</p>
+                    </div>
+                    <div class="glass-label">
+                        <h3>Why it matters</h3>
+                        <p>It helps detect momentary lapses of attention (mind-wandering) and tests your inhibitory control (stopping a habitual response).</p>
+                    </div>
+                </div>
+                <button class="btn secondary mt-2" onclick="navigate('home')">Back to Home</button>
+            </div>
+        </section>
+
+        <!-- TEST INTRO -->
+        <section id="test-intro" class="view">
+            <div class="glass-card test-setup">
+                <h2>Prepare for the Test</h2>
+                <ul class="instructions">
+                    <li>Numbers 1 through 9 will appear on screen.</li>
+                    <li>Press <strong>SPACEBAR</strong> (or tap screen) for every number.</li>
+                    <li><strong>DO NOT</strong> press anything when you see the number <span class="highlight">3</span>.</li>
+                    <li>Be as fast and accurate as possible.</li>
+                </ul>
+                <p class="note">The test takes approximately 1 minute.</p>
+                <button class="btn primary glow" onclick="startTest()">Initialize Engine</button>
+            </div>
+        </section>
+
+        <!-- SART TEST SYSTEM -->
+        <section id="test-engine" class="view">
+            <div class="test-header">
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+            <div class="stimulus-container">
+                <div id="stimulus">+</div>
+            </div>
+            <div class="test-footer">
+                <p>Press SPACE for all numbers EXCEPT 3</p>
+            </div>
+        </section>
+
+        <!-- RESULTS DASHBOARD -->
+        <section id="results" class="view">
+            <div class="dashboard container print-container">
+                <div class="header-action">
+                    <h2>Analysis Complete</h2>
+                    <button class="btn secondary no-print" onclick="window.print()">Export PDF</button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="glass-label stat">
+                        <span class="label">Accuracy</span>
+                        <span class="value" id="res-acc">0%</span>
+                    </div>
+                    <div class="glass-label stat">
+                        <span class="label">Avg Reaction Time</span>
+                        <span class="value" id="res-rt">0ms</span>
+                    </div>
+                    <div class="glass-label stat">
+                        <span class="label">Commission Errors (Impulsivity)</span>
+                        <span class="value" id="res-ce">0</span>
+                    </div>
+                    <div class="glass-label stat">
+                        <span class="label">Omission Errors (Inattention)</span>
+                        <span class="value" id="res-oe">0</span>
+                    </div>
+                </div>
+
+                <div class="analysis-section glass-label">
+                    <h3>AI Cognitive Insight</h3>
+                    <p id="ai-insight">Analyzing neural patterns...</p>
+                </div>
+
+                <div class="chart-section glass-label">
+                    <h3>Reaction Time Timeline</h3>
+                    <canvas id="results-chart" width="800" height="300"></canvas>
+                </div>
+
+                <div class="action-footer no-print">
+                    <button class="btn primary" onclick="navigate('home')">Return Home</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
