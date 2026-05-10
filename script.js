@@ -339,7 +339,7 @@ function saveData(acc, rt) {
 }
 
 // --- BACKGROUND PARTICLES ---
-const canvas = document.getElementById3('bg-canvas');
+const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 
