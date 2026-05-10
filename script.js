@@ -251,7 +251,6 @@ function processResults() {
     drawChart(rts);
     saveData(accuracy, avgRt);
 }
-
 // --- PURE JS CANVAS CHART ---
 function drawChart(dataPoints) {
     const canvas = document.getElementById('results-chart');
@@ -260,10 +259,12 @@ function drawChart(dataPoints) {
 
     if(dataPoints.length === 0) return;
 
-    const padding = 40;
+    // Increased padding to 50 to make room for the "ms" labels on the left
+    const padding = 50; 
     const maxVal = Math.max(...dataPoints, 600);
     const minVal = Math.min(...dataPoints, 200);
     
+    // Draw Axes
     ctx.strokeStyle = '#8a94a6';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -272,11 +273,32 @@ function drawChart(dataPoints) {
     ctx.lineTo(canvas.width - padding, canvas.height - padding);
     ctx.stroke();
 
-    ctx.strokeStyle = state.theme === 'dark' ? '#00d2ff' : '#3a7bd5';
+    // --- ADDED: Y-Axis Numbering (ms) ---
+    ctx.fillStyle = '#8a94a6';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    
+    // Draw 5 reference points on the Y-axis
+    const ySteps = 4;
+    for (let i = 0; i <= ySteps; i++) {
+        const val = minVal + (maxVal - minVal) * (i / ySteps);
+        const y = canvas.height - padding - (i / ySteps) * (canvas.height - padding * 2);
+        
+        // Draw the text (e.g., "400 ms")
+        ctx.fillText(`${Math.round(val)} ms`, padding - 10, y);
+    }
+
+    // --- ADDED: X-Axis Numbering ---
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const xStep = (canvas.width - padding * 2) / Math.max(1, (dataPoints.length - 1));
+
+    // Draw Line Graph
+    // (Assuming 'state' is defined in your broader scope as in your original code)
+    ctx.strokeStyle = (typeof state !== 'undefined' && state.theme === 'dark') ? '#00d2ff' : '#3a7bd5';
     ctx.lineWidth = 3;
     ctx.beginPath();
-
-    const xStep = (canvas.width - padding * 2) / Math.max(1, (dataPoints.length - 1));
     
     dataPoints.forEach((val, i) => {
         const x = padding + (i * xStep);
@@ -285,11 +307,28 @@ function drawChart(dataPoints) {
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
         
-        // Draw points
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(x - 3, y - 3, 6, 6);
+        // Draw the run number on the X-axis (1, 2, 3...)
+        ctx.fillStyle = '#8a94a6';
+        ctx.fillText(i + 1, x, canvas.height - padding + 10);
     });
     ctx.stroke();
+
+    // Draw Points on top of the line
+    dataPoints.forEach((val, i) => {
+        const x = padding + (i * xStep);
+        const y = canvas.height - padding - ((val - minVal) / (maxVal - minVal) * (canvas.height - padding * 2));
+        
+        // The white square dots
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x - 3, y - 3, 6, 6);
+
+        /* 
+         * OPTIONAL: If you want the exact 'ms' value floating right next to 
+         * each point instead of just on the Y-Axis, uncomment the lines below:
+         */
+        // ctx.fillStyle = '#8a94a6';
+        // ctx.fillText(`${val}ms`, x, y - 15);
+    });
 }
 
 // --- LOCAL STORAGE ---
@@ -300,7 +339,7 @@ function saveData(acc, rt) {
 }
 
 // --- BACKGROUND PARTICLES ---
-const canvas = document.getElementById('bg-canvas');
+const canvas = document.getElementById3('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 
